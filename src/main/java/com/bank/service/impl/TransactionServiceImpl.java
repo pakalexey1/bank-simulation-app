@@ -1,15 +1,29 @@
 package com.bank.service.impl;
 
+import com.bank.enums.AccountType;
+import com.bank.exception.AcountOwnershipException;
 import com.bank.exception.BadRequestException;
+import com.bank.exception.InsufficientBalanceException;
 import com.bank.model.Account;
 import com.bank.model.Transaction;
+import com.bank.repository.AccountRepository;
+import com.bank.repository.TransactionRepository;
 import com.bank.service.TransactionService;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 public class TransactionServiceImpl implements TransactionService {
+
+    private final AccountRepository accountRepository; //use private final not to forget to add the constructor
+    private final TransactionRepository transactionRepository;
+
+    public TransactionServiceImpl(AccountRepository accountRepository, TransactionRepository transactionRepository) {
+        this.accountRepository = accountRepository;
+        this.transactionRepository = transactionRepository;
+    }
 
     @Override
     public Transaction makeTransfer(Account sender, Account receiver, BigDecimal amount, Date creationDate, String message) {
@@ -21,12 +35,47 @@ public class TransactionServiceImpl implements TransactionService {
 
          */
 
-        validateAccount(sender,receiver);
-
+        validateAccount(sender, receiver);
+        checkAccountOwnership(sender, receiver);
+        executeBalanceAndUpdateIfRequired(amount,sender,receiver);
         //makeTransfer
 
+        /*
+        after all validations are complete, and money transferred, create Transaction object and save/return it
+         */
 
-        return null;
+        Transaction transaction = Transaction.builder().amount(amount).sender(sender.getId()).receiver(receiver.getId())
+                .createDate(creationDate).message(message).build();
+
+        //save into DB and return it (per method request)
+        return transactionRepository.save(transaction);
+    }
+
+    private void executeBalanceAndUpdateIfRequired(BigDecimal amount, Account sender, Account receiver) {
+        if (checkSenderBalance(sender,amount)){
+            //update sender and receiver balance
+            sender.setBalance(sender.getBalance().subtract(amount));
+            receiver.setBalance(receiver.getBalance().add(amount));
+        }else{
+            throw new InsufficientBalanceException("Insufficient balance to complete this transfer");
+        }
+    }
+
+    private boolean checkSenderBalance(Account sender, BigDecimal amount) {
+        //verify sender has enough balance to send
+        return sender.getBalance().subtract(amount).compareTo(BigDecimal.ZERO) >= 0;
+
+    }
+
+    private void checkAccountOwnership(Account sender, Account receiver) {
+        /*
+        create an if statement that checks if one of the account is saving and the user
+        of sender or receiver is not the same, throw AccountOwnershipException
+         */
+        if (sender.getAccountType().equals(AccountType.SAVING) || receiver.getAccountType().equals(AccountType.SAVING)
+                && !sender.getUserId().equals(receiver.getUserId())) {
+            throw new AcountOwnershipException("If one of the accounts is a saving type, the user ID must be the same for sender and receiver");
+        }
     }
 
     private void validateAccount(Account sender, Account receiver) {
@@ -36,9 +85,22 @@ public class TransactionServiceImpl implements TransactionService {
         - if the account exists in the database (repository)
          */
 
-        if (sender==null || receiver==null){
+        if (sender == null || receiver == null) {
             throw new BadRequestException("Sender or Receiver can't be null");
         }
+
+        //if accounts are the same throw BadRequestException with an "accounts need to be different" message
+        if (sender.getId().equals(receiver.getId())) {
+            throw new BadRequestException("Sender account need to be different from the Receiver's account");
+        }
+
+        findAccountById(sender.getId());
+        findAccountById(receiver.getId());
+
+    }
+
+    private void findAccountById(UUID id) {
+        accountRepository.findById(id);
     }
 
 
