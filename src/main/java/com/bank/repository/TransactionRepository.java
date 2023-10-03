@@ -12,6 +12,11 @@ public class TransactionRepository {
     public Transaction save(Transaction transaction){
         transactionList.add(transaction);
         return transaction;
+    }
 
+
+    public List<Transaction> findAll() {
+
+        return transactionList;
     }
 }
