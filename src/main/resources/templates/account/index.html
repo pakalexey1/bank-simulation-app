@@ -34,12 +34,12 @@
           </tr>
           </thead>
           <tbody>
-          <tr >
-            <td></td>
-            <td></td>
-            <td></td>
-            <td ></td>
-            <td></td>
+          <tr th:each="eachAccount : ${accountList}">
+            <td th:text="${eachAccount.userId}"></td>
+            <td th:text="${eachAccount.accountStatus}"></td>
+            <td th:text="${eachAccount.balance}"></td>
+            <td th:text="${eachAccount.accountType}"></td>
+            <td th:text="${eachAccount.creationDate}"></td>
             <td><a class="btn btn-danger" href="#">Delete</a></td>
             <td><a class="btn btn-success" href="#">Account Transaction</a></td>
           </tr>
