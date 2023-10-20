@@ -27,4 +27,9 @@ public class AccountRepository {
         return  accountList.stream().filter(account -> account.getId().equals(id))
                 .findAny().orElseThrow(() -> new RecordNotFoundException("Account doesn't exist in the database"));
     }
+
+    public void deleteById(UUID id){
+
+
+    }
 }

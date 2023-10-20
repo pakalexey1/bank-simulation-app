@@ -40,7 +40,10 @@
             <td th:text="${eachAccount.balance}"></td>
             <td th:text="${eachAccount.accountType}"></td>
             <td th:text="${eachAccount.creationDate}"></td>
-            <td><a class="btn btn-danger" href="#">Delete</a></td>
+            <td>
+              <a th:if="${eachAccount.accountStatus.name()=='ACTIVE'}" class="btn btn-danger" th:href="@{delete/{id}(id=${eachAccount.id})}">Delete</a>
+              <a th:if="${eachAccount.accountStatus.name()=='DELETED'}" class="btn btn-success" th:href="@{activate/{id}(id=${eachAccount.id})}">Activate</a>
+            </td>
             <td><a class="btn btn-success" href="#">Account Transaction</a></td>
           </tr>
           </tbody>
