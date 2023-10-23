@@ -1,0 +1,34 @@
+package com.bank.controller;
+
+import com.bank.model.Transaction;
+import com.bank.service.AccountService;
+import com.bank.service.TransactionService;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class TransactionController {
+
+    private final AccountService accountService;
+    private final TransactionService transactionService;
+
+    public TransactionController(AccountService accountService, TransactionService transactionService) {
+        this.accountService = accountService;
+        this.transactionService = transactionService;
+    }
+
+
+    @GetMapping("/make-transfer")
+    public String makeTransfer(Model model){
+
+        //provide empty transaction object
+            model.addAttribute("transaction", Transaction.builder().build());
+        //provide the list of all accounts
+            model.addAttribute("accounts",accountService.listAllAccount());
+        //provide the list of the last 10 transactions
+            model.addAttribute("lastTransactions",transactionService.last10Transactions());
+
+        return "transaction/make-transfer";
+    }
+}
