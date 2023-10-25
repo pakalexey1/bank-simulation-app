@@ -52,8 +52,13 @@ public class TransactionController {
 
     //a method that gets the account id from index.html and prits it on the console
     @GetMapping("transaction/{id}")
-    public String getTransactionList(@PathVariable("id") UUID id){
+    public String getTransactionList(@PathVariable("id") UUID id, Model model){
         System.out.println(id);
+
+        //get teh list of transactions based on id and return as a model attribute
+
+        model.addAttribute("transactions", transactionService.findTransactionListById(id));
+        transactionService.findTransactionListById(id);
 
         return "transaction/transactions";
     }
