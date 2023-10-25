@@ -40,6 +40,7 @@ public class TransactionController {
     @PostMapping("/transfer")
     public String makeTransfer(@ModelAttribute("transaction") Transaction transaction){
 
+        //there is no findById(UID) method so retrieveByID is created to address this issue
         Account sender = accountService.retreieveByID(transaction.getSender());
         Account receiver = accountService.retreieveByID(transaction.getReceiver());
         transactionService.makeTransfer(sender,receiver,transaction.getAmount(),new Date(),transaction.getMessage());
