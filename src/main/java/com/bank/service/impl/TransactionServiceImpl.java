@@ -131,9 +131,6 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public List<Transaction> last10Transactions() {
-        return transactionList.stream()
-                .sorted(Comparator.comparing(Transaction::getCreateDate).reversed())
-                .limit(10)
-                .collect(Collectors.toList());
+        return transactionRepository.findLast10Transactions();
     }
 }

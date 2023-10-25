@@ -63,12 +63,12 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr >
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
+                                <tr th:each="eachTransaction:${lastTransactions}">
+                                    <td th:text="${eachTransaction.getSender()}"></td>
+                                    <td th:text="${eachTransaction.getReceiver()}"></td>
+                                    <td th:text="${eachTransaction.getAmount()}"></td>
+                                    <td th:text="${eachTransaction.getCreateDate()}"></td>
+                                    <td th:text="${eachTransaction.getMessage()}"></td>
                                 </tr>
                             </tbody>
                         </table>
