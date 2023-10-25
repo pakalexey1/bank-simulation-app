@@ -36,4 +36,9 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.findAll();
     }
 
+    @Override
+    public Account retreieveByID(UUID id) {
+        return accountRepository.findById(id);
+    }
+
 }

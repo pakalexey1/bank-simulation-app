@@ -1,11 +1,16 @@
 package com.bank.controller;
 
+import com.bank.model.Account;
 import com.bank.model.Transaction;
 import com.bank.service.AccountService;
 import com.bank.service.TransactionService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import java.util.Date;
 
 @Controller
 public class TransactionController {
@@ -30,5 +35,16 @@ public class TransactionController {
             model.addAttribute("lastTransactions",transactionService.last10Transactions());
 
         return "transaction/make-transfer";
+    }
+
+    @PostMapping("/transfer")
+    public String makeTransfer(@ModelAttribute("transaction") Transaction transaction){
+
+        Account sender = accountService.retreieveByID(transaction.getSender());
+        Account receiver = accountService.retreieveByID(transaction.getReceiver());
+        transactionService.makeTransfer(sender,receiver,transaction.getAmount(),new Date(),transaction.getMessage());
+
+        return "redirect:/make-transfer";
+
     }
 }
