@@ -6,11 +6,13 @@ import com.bank.service.AccountService;
 import com.bank.service.TransactionService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import javax.validation.Valid;
 import java.util.Date;
 import java.util.UUID;
 
@@ -40,8 +42,15 @@ public class TransactionController {
     }
 
     @PostMapping("/transfer")
-    public String makeTransfer(@ModelAttribute("transaction") Transaction transaction){
+    public String makeTransfer(@Valid @ModelAttribute("transaction") Transaction transaction, BindingResult bindingResult, Model model){
+        if(bindingResult.hasErrors()){
 
+            //provide the list of all accounts
+            model.addAttribute("accounts",accountService.listAllAccount());
+            //provide the list of the last 10 transactions
+            model.addAttribute("lastTransactions",transactionService.last10Transactions());
+            return "transaction/make-transfer";
+        }
         //there is no findById(UID) method so retrieveByID is created to address this issue
         Account sender = accountService.retreieveByID(transaction.getSender());
         Account receiver = accountService.retreieveByID(transaction.getReceiver());
