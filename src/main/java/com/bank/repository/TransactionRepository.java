@@ -1,6 +1,6 @@
 package com.bank.repository;
 
-import com.bank.model.Transaction;
+import com.bank.dto.TransactionDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -11,29 +11,29 @@ import java.util.stream.Collectors;
 
 @Component
 public class TransactionRepository {
-    public static List<Transaction> transactionList = new ArrayList<>();
-    public Transaction save(Transaction transaction){
-        transactionList.add(transaction);
-        return transaction;
+    public static List<TransactionDTO> transactionDTOList = new ArrayList<>();
+    public TransactionDTO save(TransactionDTO transactionDTO){
+        transactionDTOList.add(transactionDTO);
+        return transactionDTO;
     }
 
 
-    public List<Transaction> findAll() {
+    public List<TransactionDTO> findAll() {
 
-        return transactionList;
+        return transactionDTOList;
     }
 
-    public List<Transaction> findLast10Transactions() {
-        return transactionList.stream()
-                .sorted(Comparator.comparing(Transaction::getCreateDate).reversed())
+    public List<TransactionDTO> findLast10Transactions() {
+        return transactionDTOList.stream()
+                .sorted(Comparator.comparing(TransactionDTO::getCreateDate).reversed())
                 .limit(10)
                 .collect(Collectors.toList());
     }
 
-    public List<Transaction> findTransactionListByAccountId(UUID id) {
+    public List<TransactionDTO> findTransactionListByAccountId(UUID id) {
         //if account id is used either as a sender or receiver, return those transactions
-        return transactionList.stream()
-                .filter(transaction -> transaction.getSender().equals(id) || transaction.getReceiver().equals(id))
+        return transactionDTOList.stream()
+                .filter(transactionDTO -> transactionDTO.getSender().equals(id) || transactionDTO.getReceiver().equals(id))
                 .collect(Collectors.toList());
     }
 }

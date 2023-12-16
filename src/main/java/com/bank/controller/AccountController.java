@@ -1,11 +1,10 @@
 package com.bank.controller;
 
+import com.bank.dto.AccountDTO;
 import com.bank.enums.AccountStatus;
 import com.bank.enums.AccountType;
-import com.bank.model.Account;
 import com.bank.repository.AccountRepository;
 import com.bank.service.AccountService;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -37,7 +36,7 @@ public class AccountController {
     public String createForm(Model model){
 
         //provide an empty account object
-        model.addAttribute("account", Account.builder().build()); //the same as new Account()
+        model.addAttribute("account", new AccountDTO()); //the same as new Account()
 
         //provide accountType enum info to fill the dropdown option
         model.addAttribute("accountTypes", AccountType.values());
@@ -46,14 +45,14 @@ public class AccountController {
     }
 
     @PostMapping("/create")
-        public String createAccount(@Valid @ModelAttribute("account") Account account, BindingResult bindingResult, Model model){
+        public String createAccount(@Valid @ModelAttribute("account") AccountDTO accountDTO, BindingResult bindingResult, Model model){
         if (bindingResult.hasErrors()){
 
             model.addAttribute("accountTypes",AccountType.values());
             return "account/create-account";
         }
-        System.out.println(account);
-        accountService.createNewAccount(account.getBalance(),new Date(),account.getAccountType(),account.getUserId());
+        System.out.println(accountDTO);
+        accountService.createNewAccount(accountDTO.getBalance(),new Date(), accountDTO.getAccountType(), accountDTO.getUserId());
 
         return "redirect:/index";
     }
@@ -63,16 +62,16 @@ public class AccountController {
 
         System.out.println(id);
 
-        Account account = accountRepository.findById(id);
-        account.setAccountStatus(AccountStatus.DELETED);
+        AccountDTO accountDTO = accountRepository.findById(id);
+        accountDTO.setAccountStatus(AccountStatus.DELETED);
 
         return "redirect:/index";
     }
 
     @GetMapping("/activate/{id}")
     public String activateAccount(@PathVariable("id") UUID id){
-        Account account = accountRepository.findById(id);
-        account.setAccountStatus(AccountStatus.ACTIVE);
+        AccountDTO accountDTO = accountRepository.findById(id);
+        accountDTO.setAccountStatus(AccountStatus.ACTIVE);
 
         return "redirect:/index";
     }

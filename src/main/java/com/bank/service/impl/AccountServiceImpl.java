@@ -2,7 +2,7 @@ package com.bank.service.impl;
 
 import com.bank.enums.AccountStatus;
 import com.bank.enums.AccountType;
-import com.bank.model.Account;
+import com.bank.dto.AccountDTO;
 import com.bank.repository.AccountRepository;
 import com.bank.service.AccountService;
 import org.springframework.stereotype.Component;
@@ -22,22 +22,22 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account createNewAccount(BigDecimal balance, Date createDate, AccountType accountType, Long userId) {
+    public AccountDTO createNewAccount(BigDecimal balance, Date createDate, AccountType accountType, Long userId) {
         //create Account object
-        Account account = Account.builder().id(UUID.randomUUID()).userId(userId)
+        AccountDTO accountDTO = AccountDTO.builder().id(UUID.randomUUID()).userId(userId)
                 .balance(balance).accountType(accountType).creationDate(createDate).accountStatus(AccountStatus.ACTIVE).build();
         //save it into the database (repository)
         //return the created object
-        return accountRepository.save(account);
+        return accountRepository.save(accountDTO);
     }
 
     @Override
-    public List<Account> listAllAccount() {
+    public List<AccountDTO> listAllAccount() {
         return accountRepository.findAll();
     }
 
     @Override
-    public Account retreieveByID(UUID id) {
+    public AccountDTO retrieveByID(UUID id) {
         return accountRepository.findById(id);
     }
 

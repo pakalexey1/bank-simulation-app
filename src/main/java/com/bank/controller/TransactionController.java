@@ -1,7 +1,7 @@
 package com.bank.controller;
 
-import com.bank.model.Account;
-import com.bank.model.Transaction;
+import com.bank.dto.AccountDTO;
+import com.bank.dto.TransactionDTO;
 import com.bank.service.AccountService;
 import com.bank.service.TransactionService;
 import org.springframework.stereotype.Controller;
@@ -32,7 +32,7 @@ public class TransactionController {
     public String makeTransfer(Model model){
 
         //provide empty transaction object
-            model.addAttribute("transaction", Transaction.builder().build());
+            model.addAttribute("transaction", TransactionDTO.builder().build());
         //provide the list of all accounts
             model.addAttribute("accounts",accountService.listAllAccount());
         //provide the list of the last 10 transactions
@@ -42,7 +42,7 @@ public class TransactionController {
     }
 
     @PostMapping("/transfer")
-    public String makeTransfer(@Valid @ModelAttribute("transaction") Transaction transaction, BindingResult bindingResult, Model model){
+    public String makeTransfer(@Valid @ModelAttribute("transaction") TransactionDTO transactionDTO, BindingResult bindingResult, Model model){
         if(bindingResult.hasErrors()){
 
             //provide the list of all accounts
@@ -52,9 +52,9 @@ public class TransactionController {
             return "transaction/make-transfer";
         }
         //there is no findById(UID) method so retrieveByID is created to address this issue
-        Account sender = accountService.retreieveByID(transaction.getSender());
-        Account receiver = accountService.retreieveByID(transaction.getReceiver());
-        transactionService.makeTransfer(sender,receiver,transaction.getAmount(),new Date(),transaction.getMessage());
+        AccountDTO sender = accountService.retrieveByID(transactionDTO.getSender());
+        AccountDTO receiver = accountService.retrieveByID(transactionDTO.getReceiver());
+        transactionService.makeTransfer(sender,receiver, transactionDTO.getAmount(),new Date(), transactionDTO.getMessage());
 
         return "redirect:/make-transfer";
     }
