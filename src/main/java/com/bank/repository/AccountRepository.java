@@ -21,7 +21,7 @@ public class AccountRepository {
         return accountDTOList;
     }
 
-    public AccountDTO findById(UUID id) {
+    public AccountDTO findById(Long id) {
         //write a method, that finds an account inside the list, if can't - throw a RecordNotFoundException
 
         return  accountDTOList.stream().filter(account -> account.getId().equals(id))

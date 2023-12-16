@@ -52,8 +52,7 @@ public class TransactionServiceImpl implements TransactionService {
         after all validations are complete, and money transferred, create Transaction object and save/return it
          */
 
-            TransactionDTO transactionDTO = TransactionDTO.builder().amount(amount).sender(sender.getId()).receiver(receiver.getId())
-                    .createDate(creationDate).message(message).build();
+            TransactionDTO transactionDTO = new TransactionDTO();
 
             //save into DB and return it (per method request)
             return transactionRepository.save(transactionDTO);
@@ -110,7 +109,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     }
 
-    private void findAccountById(UUID id) {
+    private void findAccountById(Long id) {
         accountRepository.findById(id);
     }
 
@@ -134,7 +133,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<TransactionDTO> findTransactionListById(UUID id) {
+    public List<TransactionDTO> findTransactionListById(Long id) {
         return transactionRepository.findTransactionListByAccountId(id);
     }
 }
