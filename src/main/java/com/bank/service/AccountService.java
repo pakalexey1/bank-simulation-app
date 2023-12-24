@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface AccountService {
-    AccountDTO createNewAccount(BigDecimal balance, Date createDate, AccountType accountType, Long userId);
+    void createNewAccount(AccountDTO accountDTO);
     List<AccountDTO> listAllAccount();
 
     AccountDTO retrieveByID(Long id);

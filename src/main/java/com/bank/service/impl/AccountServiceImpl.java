@@ -1,61 +1,76 @@
 package com.bank.service.impl;
 
+import com.bank.entity.Account;
 import com.bank.enums.AccountStatus;
 import com.bank.enums.AccountType;
 import com.bank.dto.AccountDTO;
+import com.bank.mapper.AccountMapper;
 import com.bank.repository.AccountRepository;
 import com.bank.service.AccountService;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+import javax.security.auth.login.AccountNotFoundException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 public class AccountServiceImpl implements AccountService {
 
-    AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
+    private final AccountMapper accountMapper;
 
-    public AccountServiceImpl(AccountRepository accountRepository) {
+    public AccountServiceImpl(AccountRepository accountRepository, ModelMapper modelMapper, AccountMapper accountMapper) {
         this.accountRepository = accountRepository;
+        this.accountMapper = accountMapper;
     }
 
     @Override
-    public AccountDTO createNewAccount(BigDecimal balance, Date createDate, AccountType accountType, Long userId) {
-        //create Account object
-        AccountDTO accountDTO = new AccountDTO();
-        //save it into the database (repository)
-        //return the created object
-        return accountRepository.save(accountDTO);
+    public void createNewAccount(AccountDTO accountDTO) {
+        accountDTO.setCreationDate(new Date());
+        accountDTO.setAccountStatus(AccountStatus.ACTIVE);
+        accountRepository.save(accountMapper.convertToEntity(accountDTO));
     }
 
     @Override
     public List<AccountDTO> listAllAccount() {
-        return accountRepository.findAll();
+        //the method below retrieves a list of accounts but the method requires a list of Account DTOs
+        List<Account> accountList = accountRepository.findAll();
+
+        //convert every element of the list into a DTO, so at the end it's a List of AccountDTOs
+        return accountList.stream().map(accountMapper::convertToDto).collect(Collectors.toList());
     }
 
     @Override
     public AccountDTO retrieveByID(Long id) {
-        return accountRepository.findById(id);
+        //find the account entity based on id, convert it to dto and return it
+        return accountMapper.convertToDto(accountRepository.findById(id).get());
     }
 
     @Override
     public void deleteAccount(Long id) {
         //find the account to which the id belongs
-        AccountDTO accountDTO = accountRepository.findById(id);
+        Account account = accountRepository.findById(id).get();
 
         //set status to deleted
-        accountDTO.setAccountStatus(AccountStatus.DELETED);
+        account.setAccountStatus(AccountStatus.DELETED);
+
+        //save the updated account object
+        accountRepository.save(account);
     }
 
     @Override
     public void activateAccount(Long id) {
         //find the account to which the id belongs
-        AccountDTO accountDTO = accountRepository.findById(id);
+        Account account = accountRepository.findById(id).get();
 
         //set status to Active
-        accountDTO.setAccountStatus(AccountStatus.ACTIVE);
+        account.setAccountStatus(AccountStatus.ACTIVE);
+
+        //save the updated account object
+        accountRepository.save(account);
 
     }
 
