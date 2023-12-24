@@ -58,10 +58,11 @@ public class TransactionServiceImpl implements TransactionService {
         after all validations are complete, and money transferred, create Transaction object and save/return it
          */
 
-            TransactionDTO transactionDTO = new TransactionDTO();
+            TransactionDTO transactionDTO = new TransactionDTO(sender,receiver,amount,message,creationDate);
 
             //save into DB and return it (per method request)
-            return transactionRepository.save(transactionDTO);
+            transactionRepository.save(transactionMapper.convertToEntity(transactionDTO));
+            return transactionDTO;
         }else {
             throw new UnderConstructionException("App is under construction, please try again later");
         }
@@ -70,8 +71,19 @@ public class TransactionServiceImpl implements TransactionService {
     private void executeBalanceAndUpdateIfRequired(BigDecimal amount, AccountDTO sender, AccountDTO receiver) {
         if (checkSenderBalance(sender,amount)){
             //update sender and receiver balance
+            //100-80
             sender.setBalance(sender.getBalance().subtract(amount));
+            //50+80
             receiver.setBalance(receiver.getBalance().add(amount));
+            /*
+                get the dto from the database for both sender and receiver, updated balance and save it
+                create accountService updatedAccount(DTO dto) method and se it for saving
+             */
+            //find sender by id to make sure it's the right sender with the right balance
+            AccountDTO senderAcc = accountService.retrieveByID(sender.getId());
+            senderAcc.setBalance(sender.getBalance());
+            accountService.updateAccount(senderAcc);
+
         }else{
             throw new InsufficientBalanceException("Insufficient balance to complete this transfer");
         }
