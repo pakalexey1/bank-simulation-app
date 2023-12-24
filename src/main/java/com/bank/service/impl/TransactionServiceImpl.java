@@ -2,12 +2,13 @@ package com.bank.service.impl;
 
 import com.bank.dto.AccountDTO;
 import com.bank.dto.TransactionDTO;
+import com.bank.entity.Transaction;
 import com.bank.enums.AccountType;
 import com.bank.exception.AcountOwnershipException;
 import com.bank.exception.BadRequestException;
 import com.bank.exception.InsufficientBalanceException;
 import com.bank.exception.UnderConstructionException;
-import com.bank.repository.AccountRepository;
+import com.bank.mapper.TransactionMapper;
 import com.bank.repository.TransactionRepository;
 import com.bank.service.AccountService;
 import com.bank.service.TransactionService;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class TransactionServiceImpl implements TransactionService {
@@ -26,10 +28,12 @@ public class TransactionServiceImpl implements TransactionService {
     private final AccountService accountService;
 //    private final AccountRepository accountRepository; //use private final not to forget to add the constructor
     private final TransactionRepository transactionRepository;
+    private final TransactionMapper transactionMapper;
 
-    public TransactionServiceImpl(AccountService accountService, TransactionRepository transactionRepository) {
+    public TransactionServiceImpl(AccountService accountService, TransactionRepository transactionRepository, TransactionMapper transactionMapper) {
         this.accountService = accountService;
         this.transactionRepository = transactionRepository;
+        this.transactionMapper = transactionMapper;
     }
 
     @Override
@@ -119,7 +123,8 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public List<TransactionDTO> findAllTransaction() {
 
-        return transactionRepository.findAll();
+        List<Transaction> allTransactions = transactionRepository.findAll();
+        return allTransactions.stream().map(transactionMapper::convertToDto).collect(Collectors.toList());
     }
 
     public static List<TransactionDTO> transactionDTOList = new ArrayList<>();
@@ -131,11 +136,13 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public List<TransactionDTO> last10Transactions() {
-        return transactionRepository.findLast10Transactions();
+        List<Transaction> last10Transactions = transactionRepository.findLast10Transactions();
+        return last10Transactions.stream().map(transactionMapper::convertToDto).collect(Collectors.toList());
     }
 
     @Override
     public List<TransactionDTO> findTransactionListById(Long id) {
-        return transactionRepository.findTransactionListByAccountId(id);
+        List<Transaction> transactionListByAccountId = transactionRepository.findTransactionListByAccountId(id);
+        return  transactionListByAccountId.stream().map(transactionMapper::convertToDto).collect(Collectors.toList());
     }
 }
