@@ -33,7 +33,7 @@ public class TransactionController {
         //provide empty transaction object
             model.addAttribute("transaction", new TransactionDTO());
         //provide the list of all accounts
-            model.addAttribute("accounts",accountService.listAllAccount());
+            model.addAttribute("accounts",accountService.listAllActiveAccount());
         //provide the list of the last 10 transactions
             model.addAttribute("lastTransactions",transactionService.last10Transactions());
 

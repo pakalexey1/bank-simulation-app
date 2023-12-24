@@ -74,4 +74,14 @@ public class AccountServiceImpl implements AccountService {
 
     }
 
+    @Override
+    public List<AccountDTO> listAllActiveAccount() {
+
+        //need a list of active accounts from repository
+        List<Account> accountList = accountRepository.findAllByAccountStatus(AccountStatus.ACTIVE);
+
+        //convert active accounts to accountDTO and return them.
+        return accountList.stream().map(accountMapper::convertToDto).collect(Collectors.toList());
+    }
+
 }

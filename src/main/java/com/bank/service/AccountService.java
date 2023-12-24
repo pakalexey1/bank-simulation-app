@@ -17,4 +17,5 @@ public interface AccountService {
 
     void activateAccount(Long id);
 
+    List<AccountDTO> listAllActiveAccount();
 }

@@ -51,7 +51,7 @@ public class AccountController {
             return "account/create-account";
         }
         System.out.println(accountDTO);
-        accountService.createNewAccount(accountDTO.getBalance(),new Date(), accountDTO.getAccountType(), accountDTO.getUserId());
+        accountService.createNewAccount(accountDTO);
 
         return "redirect:/index";
     }
@@ -59,18 +59,14 @@ public class AccountController {
     @GetMapping("/delete/{id}")
     public String deleteAccount(@PathVariable("id") Long id){
 
-        System.out.println(id);
-
-        AccountDTO accountDTO = accountRepository.findById(id);
-        accountDTO.setAccountStatus(AccountStatus.DELETED);
+        accountService.deleteAccount(id);
 
         return "redirect:/index";
     }
 
     @GetMapping("/activate/{id}")
     public String activateAccount(@PathVariable("id") Long id){
-        AccountDTO accountDTO = accountRepository.findById(id);
-        accountDTO.setAccountStatus(AccountStatus.ACTIVE);
+        accountService.activateAccount(id);
 
         return "redirect:/index";
     }

@@ -9,6 +9,7 @@ import com.bank.exception.InsufficientBalanceException;
 import com.bank.exception.UnderConstructionException;
 import com.bank.repository.AccountRepository;
 import com.bank.repository.TransactionRepository;
+import com.bank.service.AccountService;
 import com.bank.service.TransactionService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -22,11 +23,12 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Value("${under_construction}")
     private boolean underConstruction;
-    private final AccountRepository accountRepository; //use private final not to forget to add the constructor
+    private final AccountService accountService;
+//    private final AccountRepository accountRepository; //use private final not to forget to add the constructor
     private final TransactionRepository transactionRepository;
 
-    public TransactionServiceImpl(AccountRepository accountRepository, TransactionRepository transactionRepository) {
-        this.accountRepository = accountRepository;
+    public TransactionServiceImpl(AccountService accountService, TransactionRepository transactionRepository) {
+        this.accountService = accountService;
         this.transactionRepository = transactionRepository;
     }
 
@@ -110,7 +112,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     private void findAccountById(Long id) {
-        accountRepository.findById(id);
+        accountService.retrieveByID(id);
     }
 
 
